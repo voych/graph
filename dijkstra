@@ -1,0 +1,119 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+#include <queue>
+
+using namespace std;
+
+struct Graph {
+    int V;
+    vector<vector<pair<int, int>>> adj;
+
+    Graph(int V) {
+        this->V = V;
+        adj.resize(V);
+    }
+
+    void addEdge(int u, int v, int weight) {
+        adj[u].push_back({v, weight});
+    }
+};
+
+void initializeSingleSource(int s, vector<int>& d, vector<int>& pi) {
+    for (int v = 0; v < d.size(); v++) {
+        d[v] = numeric_limits<int>::max();
+        pi[v] = -1;
+    }
+    d[s] = 0;
+}
+
+void relax(int u, int v, int weight, vector<int>& d, vector<int>& pi) {
+    if (d[v] > d[u] + weight) {
+        d[v] = d[u] + weight;
+        pi[v] = u;
+    }
+}
+
+void dijkstra(Graph& G, int s, vector<int>& d, vector<int>& pi) {
+    initializeSingleSource(s, d, pi);
+
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> Q;
+
+    Q.push({0, s});
+
+    while (!Q.empty()) {
+        int u = Q.top().second;
+        Q.pop();
+
+        for (auto& neighbor : G.adj[u]) {
+            int v = neighbor.first;
+            int weight = neighbor.second;
+            
+            if (d[v] > d[u] + weight) {
+                d[v] = d[u] + weight;
+                pi[v] = u;
+                Q.push({d[v], v});
+            }
+        }
+    }
+}
+
+int main() {
+    int V = 5;
+    Graph G(V);
+
+    G.addEdge(0, 1, 10);
+    G.addEdge(0, 4, 5);
+    G.addEdge(1, 2, 1);
+    G.addEdge(1, 3, 2);
+    G.addEdge(1, 4, 2);
+    G.addEdge(2, 3, 4);
+    G.addEdge(3, 4, 3);
+
+    int startVertex = 0;
+    
+    vector<int> d(V);
+    vector<int> pi(V);
+
+    dijkstra(G, startVertex, d, pi);
+
+    cout << "Test 1: From vertex 0 (start):" << endl;
+    for (int i = 0; i < V; i++) {
+        cout << "d[" << i << "] = " << d[i] << ", pi[" << i << "] = " << pi[i] << endl;
+    }
+    cout << endl;
+
+    Graph G2(4);
+    G2.addEdge(0, 1, 5);
+    G2.addEdge(0, 2, 1);
+    G2.addEdge(1, 3, 2);
+    G2.addEdge(2, 1, 2);
+    G2.addEdge(2, 3, 3);
+
+    vector<int> d2(4);
+    vector<int> pi2(4);
+
+    dijkstra(G2, 0, d2, pi2);
+
+    cout << "Test 2: From vertex 0 (start) in second graph:" << endl;
+    for (int i = 0; i < 4; i++) {
+        cout << "d[" << i << "] = " << d2[i] << ", pi[" << i << "] = " << pi2[i] << endl;
+    }
+    cout << endl;
+
+    Graph G3(3);
+    G3.addEdge(0, 1, 1);
+    G3.addEdge(1, 2, 2);
+
+    vector<int> d3(3);
+    vector<int> pi3(3);
+
+    dijkstra(G3, 0, d3, pi3);
+
+    cout << "Test 3: From vertex 0 (start) in third graph:" << endl;
+    for (int i = 0; i < 3; i++) {
+        cout << "d[" << i << "] = " << d3[i] << ", pi[" << i << "] = " << pi3[i] << endl;
+    }
+
+    return 0;
+}
