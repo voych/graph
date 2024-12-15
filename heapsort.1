@@ -1,0 +1,80 @@
+//Отчет heapsort
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+// Функция MAX_HEAPIFY восстанавливает свойства максимальной кучи
+void MAX_HEAPIFY(std::vector<int>& A, int i, int heap_size) { 
+    int l = 2 * i + 1;  
+    int r = 2 * i + 2;  
+    int largest = i;  
+
+    if (l < heap_size && A[l] > A[i]) { 
+        largest = l;  
+    }  
+
+    if (r < heap_size && A[r] > A[largest]) { 
+        largest = r;  
+    }  
+
+    if (largest != i) { 
+        std::swap(A[i], A[largest]);  
+        MAX_HEAPIFY(A, largest, heap_size);  
+    }  
+}
+
+// Функция BUILD_MAX_HEAP строит максимальную кучу
+void BUILD_MAX_HEAP(std::vector<int>& A) { 
+    int heap_size = A.size();  
+    for (int i = heap_size / 2 - 1; i >= 0; --i) { 
+        MAX_HEAPIFY(A, i, heap_size); 
+    }  
+}
+
+// Функция HEAPSORT сортирует массив с помощью кучи
+void HEAPSORT(std::vector<int>& A) { 
+    int heap_size = A.size(); 
+    BUILD_MAX_HEAP(A); 
+
+    for (int i = heap_size - 1; i >= 1; --i) { 
+        std::swap(A[0], A[i]); 
+        heap_size--; 
+        MAX_HEAPIFY(A, 0, heap_size);  
+    }  
+}
+
+// Функция для вывода вектора
+void printArray(const std::vector<int>& A) {
+    for (int num : A) {
+        std::cout << num << " ";
+    }
+    std::cout << std::endl;
+}
+
+int main() {
+    // Тест 1: Набор данных с отсортированными числами
+    std::vector<int> data1 = {1, 2, 3, 4, 5, 6, 7};
+    std::cout << "Test 1 (Already sorted): ";
+    HEAPSORT(data1);
+    printArray(data1);
+
+    // Тест 2: Набор данных в обратном порядке
+    std::vector<int> data2 = {7, 6, 5, 4, 3, 2, 1};
+    std::cout << "Test 2 (Reverse order): ";
+    HEAPSORT(data2);
+    printArray(data2);
+
+    // Тест 3: Набор данных с повторяющимися элементами
+    std::vector<int> data3 = {3, 1, 2, 3, 2, 1};
+    std::cout << "Test 3 (Duplicates): ";
+    HEAPSORT(data3);
+    printArray(data3);
+
+    // Тест 4: Набор данных с случайными числами
+    std::vector<int> data4 = {10, 20, 5, 3, 9, 8, 7};
+    std::cout << "Test 4 (Random): ";
+    HEAPSORT(data4);
+    printArray(data4);
+
+    return 0;
+}
